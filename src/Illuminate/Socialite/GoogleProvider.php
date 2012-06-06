@@ -54,16 +54,6 @@ class GoogleProvider extends Provider {
 	protected function getGrantTypeOptions(Request $request, $grantType, $options)
 	{
 		$return = array();
-
-		// Here we will set the extra options needed for various grant type request.
-		// This may be anything that is needed for a successful request and the
-		// options we return will be merged into the rest of the parameters.
-		if ($grantType == 'authorization_code')
-		{
-			$return['redirect_uri'] = $this->getCurrentUrl($request);
-		}
-
-		return $return;
 	}
 
 	/**
