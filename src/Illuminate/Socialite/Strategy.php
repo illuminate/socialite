@@ -139,8 +139,8 @@ abstract class Strategy {
 		$elements = array('client_id', 'redirect_uri', 'state', 'response_type');
 
 		// We'll simply spin through the various query string elements and call the retrieval
-		// function for each one, which is responsible for returning the value and may
-		// be overriden by the stragegy for more complete element customization.
+		// function for each one, which is responsible for returning the value and may be
+		// overriden by the stragegy for more complete request parameter customization.
 		foreach ($elements as $element)
 		{
 			$method = $this->snakeToCamel($element);
@@ -251,8 +251,8 @@ abstract class Strategy {
 		$grantType = $options['grant_type'];
 
 		// When requesting the access token, we will also attach the client secret key to
-		// the request as an identifier for the consuming application. This key isn't
-		// needed when simply requesting the code before getting an acess token.
+		// the request as an identifier for the consuming application. This key is not
+		// needed when simply requesting the user code before getting acess tokens.
 		$query['client_secret'] = $this->getClientSecret();
 
 		$query['grant_type'] = $grantType;
