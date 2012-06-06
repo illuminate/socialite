@@ -53,7 +53,7 @@ class GoogleProvider extends Provider {
 	 */
 	protected function getGrantTypeOptions(Request $request, $grantType, $options)
 	{
-		$return = array();
+		return array();
 	}
 
 	/**
