@@ -1,0 +1,22 @@
+{
+    "name": "illuminate/socialite",
+    "description": "An elegant extension of the Silex framework.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Taylor Otwell",
+            "email": "taylorotwell@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "symfony/http-foundation": "2.*",
+        "guzzle/guzzle": "2.6.*"
+    },
+    "require-dev": {
+        "mockery/mockery": "0.7.*"
+    },
+    "autoload": {
+        "psr-0": {"Illuminate\\Socialite": "src/"}
+    }
+}
