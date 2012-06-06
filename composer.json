@@ -1,6 +1,6 @@
 {
     "name": "illuminate/socialite",
-    "description": "An elegant extension of the Silex framework.",
+    "description": "A simple library for OAuth 2 authentication.",
     "license": "MIT",
     "authors": [
         {

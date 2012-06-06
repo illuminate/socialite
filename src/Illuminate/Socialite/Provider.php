@@ -4,7 +4,7 @@ use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Message\Response;
 use Symfony\Component\HttpFoundation\Request;
 
-abstract class Strategy {
+abstract class Provider {
 
 	/**
 	 * The client ID for the provider.
@@ -21,7 +21,7 @@ abstract class Strategy {
 	protected $secret;
 
 	/**
-	 * Create a new strategy instance.
+	 * Create a new provider instance.
 	 *
 	 * @param  string  $clientId
 	 * @param  string  $secret
@@ -52,9 +52,10 @@ abstract class Strategy {
 	 *
 	 * @param  Symfony\Component\HttpFoundation\Request
 	 * @param  string $grantType
+	 * @param  array  $options
 	 * @return array
 	 */
-	abstract protected function getGrantTypeOptions(Request $request, $grantType);
+	abstract protected function getGrantTypeOptions(Request $request, $grantType, $options);
 
 	/**
 	 * Get an array of parameters from the access token response.
@@ -248,16 +249,18 @@ abstract class Strategy {
 	{
 		$query['client_id'] = $this->getClientId();
 
-		$grantType = $options['grant_type'];
+		$grant = $options['grant_type'];
 
 		// When requesting the access token, we will also attach the client secret key to
 		// the request as an identifier for the consuming application. This key is not
 		// needed when simply requesting the user code before getting acess tokens.
 		$query['client_secret'] = $this->getClientSecret();
 
-		$query['grant_type'] = $grantType;
+		$query['grant_type'] = $grant;
 
-		return array_merge($query, $this->getGrantTypeOptions($request, $grantType));
+		$grantOptions = $this->getGrantTypeOptions($request, $grant, $options);
+
+		return array_merge($query, $grantOptions);
 	}
 
 	/**
