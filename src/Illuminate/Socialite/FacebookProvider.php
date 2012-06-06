@@ -4,14 +4,14 @@ use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Message\Response;
 use Symfony\Component\HttpFoundation\Request;
 
-class GoogleProvider extends Provider {
+class FacebookProvider extends Provider {
 
 	/**
 	 * The scope delimiter.
 	 *
 	 * @var string
 	 */
-	protected $scopeDelimiter = ' ';
+	protected $scopeDelimiter = ',';
 
 	/**
 	 * Get the auth end-point URL for a provider.
@@ -20,7 +20,7 @@ class GoogleProvider extends Provider {
 	 */
 	protected function getAuthEndpoint()
 	{
-		return 'https://accounts.google.com/o/oauth2/auth';
+		return 'https://www.facebook.com/dialog/oauth';
 	}
 
 	/**
@@ -30,7 +30,7 @@ class GoogleProvider extends Provider {
 	 */
 	protected function getAccessEndpoint()
 	{
-		return 'https://accounts.google.com/o/oauth2/token';
+		return 'https://graph.facebook.com/oauth/access_token';
 	}
 
 	/**
@@ -40,7 +40,7 @@ class GoogleProvider extends Provider {
 	 */
 	protected function getUserDataEndpoint()
 	{
-		return 'https://www.googleapis.com/oauth2/v1/userinfo';
+		return 'https://graph.facebook.com/me';
 	}
 
 	/**
@@ -53,17 +53,7 @@ class GoogleProvider extends Provider {
 	 */
 	protected function getGrantTypeOptions(Request $request, $grantType, $options)
 	{
-		$return = array();
-
-		// Here we will set the extra options needed for various grant type request.
-		// This may be anything that is needed for a successful request and the
-		// options we return will be merged into the rest of the parameters.
-		if ($grantType == 'authorization_code')
-		{
-			$return['redirect_uri'] = $this->getCurrentUrl($request);
-		}
-
-		return $return;
+		return array();
 	}
 
 	/**
@@ -75,7 +65,9 @@ class GoogleProvider extends Provider {
 	 */
 	protected function executeAccessRequest(ClientInterface $client, $options)
 	{
-		return $client->post($this->getAccessEndpoint(), null, $options)->send();
+		$url = $this->getAccessEndpoint().'?'.http_build_query($options);
+
+		return $client->get($url)->send();
 	}
 
 	/**
@@ -86,7 +78,11 @@ class GoogleProvider extends Provider {
 	 */
 	protected function parseAccessResponse(Response $response)
 	{
-		return $this->parseJsonResponse($response);
+		$parameters = array();
+
+		parse_str((string) $response->getBody(), $parameters);
+
+		return $parameters;
 	}
 
 	/**
@@ -101,32 +97,13 @@ class GoogleProvider extends Provider {
 	}
 
 	/**
-	 * Get the user information using a token.
-	 *
-	 * @param  Illuminate\Socialite\AccessToken  $token
-	 * @return UserData
-	 */
-	public function getUserData(AccessToken $token)
-	{
-		$query = http_build_query(array('access_token' => $token->getValue()));
-
-		$response = $this->getHttpClient()->get($this->getUserDataEndpoint().'?'.$query)->send();
-
-		return new UserData($this->parseJsonResponse($response));
-	}
-
-	/**
 	 * Get the default scopes for the provider.
 	 *
 	 * @return array
 	 */
 	public function getDefaultScope()
 	{
-		$scopes[] = 'https://www.googleapis.com/auth/userinfo.profile';
-
-		$scopes[] = 'https://www.googleapis.com/auth/userinfo.email';
-
-		return $scopes;
+		return array();
 	}
 
 }
