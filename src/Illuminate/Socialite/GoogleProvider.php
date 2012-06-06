@@ -91,21 +91,6 @@ class GoogleProvider extends Provider {
 	}
 
 	/**
-	 * Get the user information using a token.
-	 *
-	 * @param  Illuminate\Socialite\AccessToken  $token
-	 * @return UserData
-	 */
-	public function getUserData(AccessToken $token)
-	{
-		$query = http_build_query(array('access_token' => $token->getValue()));
-
-		$response = $this->getHttpClient()->get($this->getUserDataEndpoint().'?'.$query)->send();
-
-		return new UserData($this->parseJsonResponse($response));
-	}
-
-	/**
 	 * Get the default scopes for the provider.
 	 *
 	 * @return array
