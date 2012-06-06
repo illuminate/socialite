@@ -95,22 +95,6 @@ abstract class Provider {
 	abstract protected function getGrantTypeOptions(Request $request, $grantType, $options);
 
 	/**
-	 * Get an array of parameters from the access token response.
-	 *
-	 * @param  Guzzle\Http\Message\Response  $response
-	 * @return array
-	 */
-	abstract protected function parseAccessResponse(Response $response);
-
-	/**
-	 * Create an access token with the given parameters.
-	 *
-	 * @param  array  $parameters
-	 * @return AccessToken
-	 */
-	abstract protected function createAccessToken(array $parameters);
-
-	/**
 	 * Get the user information using a token.
 	 *
 	 * @param  Illuminate\Socialite\AccessToken  $token
@@ -309,6 +293,32 @@ abstract class Provider {
 		$url = $this->getAccessEndpoint().'?'.http_build_query($options);
 
 		return $client->get($url)->send();
+	}
+
+	/**
+	 * Get an array of parameters from the access token response.
+	 *
+	 * @param  Guzzle\Http\Message\Response  $response
+	 * @return array
+	 */
+	protected function parseAccessResponse(Response $response)
+	{
+		$parameters = array();
+
+		parse_str((string) $response->getBody(), $parameters);
+
+		return $parameters;
+	}
+
+	/**
+	 * Create an access token with the given parameters.
+	 *
+	 * @param  array  $parameters
+	 * @return AccessToken
+	 */
+	protected function createAccessToken(array $parameters)
+	{
+		return new AccessToken($parameters);
 	}
 
 	/**

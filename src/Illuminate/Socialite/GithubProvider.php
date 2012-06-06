@@ -80,32 +80,6 @@ class GithubProvider extends Provider {
 	}
 
 	/**
-	 * Get an array of parameters from the access token response.
-	 *
-	 * @param  Guzzle\Http\Message\Response  $response
-	 * @return array
-	 */
-	protected function parseAccessResponse(Response $response)
-	{
-		$parameters = array();
-
-		parse_str((string) $response->getBody(), $parameters);
-
-		return $parameters;
-	}
-
-	/**
-	 * Create an access token with the given parameters.
-	 *
-	 * @param  array  $parameters
-	 * @return AccessToken
-	 */
-	protected function createAccessToken(array $parameters)
-	{
-		return new AccessToken($parameters);
-	}
-
-	/**
 	 * Get the default scopes for the provider.
 	 *
 	 * @return array
