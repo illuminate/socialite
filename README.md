@@ -1,5 +1,5 @@
-# Illuminate
+# Illuminate Socialite
 
-A PHP framework for the bright.
+A simple library for OAuth 2 authentication.
 
-[![Build Status](https://secure.travis-ci.org/illuminate/foundation.png)](http://travis-ci.org/illuminate/foundation)
+[![Build Status](https://secure.travis-ci.org/illuminate/socialite.png)](http://travis-ci.org/illuminate/socialite)
