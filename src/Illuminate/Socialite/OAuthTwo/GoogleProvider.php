@@ -1,17 +1,17 @@
-<?php namespace Illuminate\Socialite;
+<?php namespace Illuminate\Socialite\OAuthTwo;
 
 use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Message\Response;
 use Symfony\Component\HttpFoundation\Request;
 
-class GithubProvider extends Provider {
+class GoogleProvider extends OAuthTwoProvider {
 
 	/**
 	 * The scope delimiter.
 	 *
 	 * @var string
 	 */
-	protected $scopeDelimiter = ',';
+	protected $scopeDelimiter = ' ';
 
 	/**
 	 * Get the auth end-point URL for a provider.
@@ -20,7 +20,7 @@ class GithubProvider extends Provider {
 	 */
 	protected function getAuthEndpoint()
 	{
-		return 'https://github.com/login/oauth/authorize';
+		return 'https://accounts.google.com/o/oauth2/auth';
 	}
 
 	/**
@@ -30,7 +30,7 @@ class GithubProvider extends Provider {
 	 */
 	protected function getAccessEndpoint()
 	{
-		return 'https://github.com/login/oauth/access_token';
+		return 'https://accounts.google.com/o/oauth2/token';
 	}
 
 	/**
@@ -40,7 +40,7 @@ class GithubProvider extends Provider {
 	 */
 	protected function getUserDataEndpoint()
 	{
-		return 'https://api.github.com/user';
+		return 'https://www.googleapis.com/oauth2/v1/userinfo';
 	}
 
 	/**
@@ -69,14 +69,25 @@ class GithubProvider extends Provider {
 	}
 
 	/**
-	 * Determine if there is a state mismatch.
+	 * Get an array of parameters from the access token response.
 	 *
-	 * @param  Symfony\Component\HttpFoundation\Request  $request
-	 * @return bool
+	 * @param  Guzzle\Http\Message\Response  $response
+	 * @return array
 	 */
-	protected function stateMismatch(Request $request)
+	protected function parseAccessResponse(Response $response)
 	{
-		return false;
+		return $this->parseJsonResponse($response);
+	}
+
+	/**
+	 * Create an access token with the given parameters.
+	 *
+	 * @param  array  $parameters
+	 * @return AccessToken
+	 */
+	protected function createAccessToken(array $parameters)
+	{
+		return new AccessToken($parameters);
 	}
 
 	/**
@@ -86,7 +97,11 @@ class GithubProvider extends Provider {
 	 */
 	public function getDefaultScope()
 	{
-		return array();
+		$scopes[] = 'https://www.googleapis.com/auth/userinfo.profile';
+
+		$scopes[] = 'https://www.googleapis.com/auth/userinfo.email';
+
+		return $scopes;
 	}
 
 }

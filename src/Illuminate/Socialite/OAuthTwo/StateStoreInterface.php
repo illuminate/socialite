@@ -1,4 +1,4 @@
-<?php namespace Illuminate\Socialite;
+<?php namespace Illuminate\Socialite\OAuthTwo;
 
 interface StateStoreInterface {
 

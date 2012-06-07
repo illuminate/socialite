@@ -1,15 +1,17 @@
-<?php namespace Illuminate\Socialite;
+<?php namespace Illuminate\Socialite\OAuthTwo;
 
 use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Message\Response;
+use Illuminate\Socialite\UserData;
 use Symfony\Component\HttpFoundation\Request;
+use Guzzle\Http\Exception\ClientErrorResponseException;
 
-abstract class Provider {
+abstract class OAuthTwoProvider {
 
 	/**
 	 * The state store implementation.
 	 *
-	 * @var Illuminate\Socialite\StateStoreInterface
+	 * @var Illuminate\Socialite\OAuthTwo\StateStoreInterface
 	 */
 	protected $state;
 
@@ -51,7 +53,7 @@ abstract class Provider {
 	/**
 	 * Create a new provider instance.
 	 *
-	 * @param  Illuminate\Socialite\StateStoreInterface  $state
+	 * @param  Illuminate\Socialite\OAuthTwo\StateStoreInterface  $state
 	 * @param  string  $clientId
 	 * @param  string  $secret
 	 * @return void
@@ -97,7 +99,7 @@ abstract class Provider {
 	/**
 	 * Get the user information using a token.
 	 *
-	 * @param  Illuminate\Socialite\AccessToken  $token
+	 * @param  Illuminate\Socialite\OAuthTwo\AccessToken  $token
 	 * @return UserData
 	 */
 	public function getUserData(AccessToken $token)
@@ -180,7 +182,7 @@ abstract class Provider {
 	 *
 	 * @param  Symfony\Component\HttpFoundation\Request  $request
 	 * @param  array  $options
-	 * @return Illuminate\Socialite\AccessToken
+	 * @return Illuminate\Socialite\OAuthTwo\AccessToken
 	 */
 	public function getAccessToken(Request $request, array $options = array())
 	{

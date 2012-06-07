@@ -1,10 +1,10 @@
-<?php namespace Illuminate\Socialite;
+<?php namespace Illuminate\Socialite\OAuthTwo;
 
 use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Message\Response;
 use Symfony\Component\HttpFoundation\Request;
 
-class FacebookProvider extends Provider {
+class FacebookProvider extends OAuthTwoProvider {
 
 	/**
 	 * The scope delimiter.
