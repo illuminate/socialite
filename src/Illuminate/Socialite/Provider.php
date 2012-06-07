@@ -209,7 +209,9 @@ abstract class Provider {
 		// the provider's user APIs for basic information about the user.
 		$response = $this->executeAccessRequest($client, $options);
 
-		return $this->createAccessToken($this->parseAccessResponse($response));
+		$parameters = $this->parseAccessResponse($response);
+
+		return $this->createAccessToken($parameters);
 	}
 
 	/**
