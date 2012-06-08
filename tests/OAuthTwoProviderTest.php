@@ -14,8 +14,24 @@ class OAuthTwoProviderTest extends PHPUnit_Framework_TestCase {
 	public function testGettingAuthUrlSetsStateInStorage()
 	{
 		$provider = $this->getMockProvider();
-		$provider->getStateStore()->shouldReceive('setState')->once();
+		$provider->getStateStore()->expects($this->once())->method('setState');
 		$provider->getAuthUrl('foo');
+	}
+
+
+	public function testAuthUrlQueryStringConstruction()
+	{
+		$provider = $this->getMockProvider();
+		$provider->expects($this->once())->method('getAuthEndpoint')->will($this->returnValue('http://bar.com'));
+		$url = $provider->getAuthUrl('http://callback.com', array('boom' => 'zoom'));
+		list($base, $query) = explode('?', $url);
+		$this->assertEquals('http://bar.com', $base);
+		$parameters = array();
+		parse_str($query, $parameters);
+		$this->assertEquals('zoom', $parameters['boom']);
+		$this->assertEquals('client', $parameters['client_id']);
+		$this->assertEquals('http://callback.com', $parameters['redirect_uri']);
+		$this->assertTrue(is_string($parameters['state']));
 	}
 
 
@@ -24,7 +40,7 @@ class OAuthTwoProviderTest extends PHPUnit_Framework_TestCase {
 		$methods = array_merge($methods, array('getAuthEndpoint', 'getAccessEndpoint', 'getUserDataEndpoint', 'getGrantTypeOptions'));
 		if (count($constructor) == 0)
 		{
-			$stateStore = m::mock('Illuminate\Socialite\OAuthTwo\StateStoreInterface');
+			$stateStore = $this->getMock('Illuminate\Socialite\OAuthTwo\StateStoreInterface');
 			$constructor = array($stateStore, 'client', 'secret');
 		}
 		return $this->getMock('Illuminate\Socialite\OAuthTwo\OAuthTwoProvider', $methods, $constructor);
