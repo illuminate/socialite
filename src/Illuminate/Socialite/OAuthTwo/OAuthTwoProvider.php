@@ -359,6 +359,27 @@ abstract class OAuthTwoProvider {
 	}
 
 	/**
+	 * Get the state store implementation.
+	 *
+	 * @return Illuminate\Socialite\OAuthTwo\StateStoreInterface
+	 */
+	public function getStateStore()
+	{
+		return $this->state;
+	}
+
+	/**
+	 * Set the state store implementation.
+	 *
+	 * @param  StateStoreInterface  $state
+	 * @return void
+	 */
+	public function setStateStore(StateStoreInterface $state)
+	{
+		$this->state = $state;
+	}
+
+	/**
 	 * Get the HTTP client to be used.
 	 *
 	 * @return Guzzle\Http\ClientInterface
