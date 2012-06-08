@@ -87,16 +87,6 @@ abstract class OAuthTwoProvider {
 	abstract protected function getUserDataEndpoint();
 
 	/**
-	 * Get an array of query string options for a grant type.
-	 *
-	 * @param  Symfony\Component\HttpFoundation\Request
-	 * @param  string $grantType
-	 * @param  array  $options
-	 * @return array
-	 */
-	abstract protected function getGrantTypeOptions(Request $request, $grantType, $options);
-
-	/**
 	 * Get the user information using a token.
 	 *
 	 * @param  Illuminate\Socialite\OAuthTwo\AccessToken  $token
@@ -269,6 +259,19 @@ abstract class OAuthTwoProvider {
 		$grantOptions = $this->getGrantTypeOptions($request, $grant, $options);
 
 		return array_merge($query, $grantOptions);
+	}
+
+	/**
+	 * Get an array of query string options for a grant type.
+	 *
+	 * @param  Symfony\Component\HttpFoundation\Request
+	 * @param  string $grantType
+	 * @param  array  $options
+	 * @return array
+	 */
+	protected function getGrantTypeOptions(Request $request, $grantType, $options)
+	{
+		return array();
 	}
 
 	/**

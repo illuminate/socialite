@@ -55,11 +55,12 @@ class OAuthTwoProviderTest extends PHPUnit_Framework_TestCase {
 		$provider->expects($this->once())->method('getAccessEndpoint')->will($this->returnValue('http://access.com'));
 		$provider->expects($this->once())->method('getCurrentUrl')->will($this->returnValue('http://current.com'));
 		$request = Request::create('/', 'GET', array('state' => 'bar', 'code' => 'blah'));
-		$url = 'http://access.com?client_id=client&client_secret=secret&redirect_uri=http://current.com&code=blah&grant_type=authorization_code';
-		$client = m::mock('Guzzle\Http\ClientInterface');
-		$client->shouldReceive('get')->once()->with($url)->andReturn($client);
-		$repsonse = new Guzzle\Http\Message\Response(200, null, 'access_token=token&expires=100');
-		$client->shouldReceive('send')->once()->andReturn($response);
+		$url = 'http://access.com?client_id=client&client_secret=secret&redirect_uri='.urlencode('http://current.com').'&code=blah&grant_type=authorization_code';
+		$client = $this->getMock('Guzzle\Http\ClientInterface');
+		$requestMock = $this->getMock('Guzzle\Http\Message\RequestInterface');
+		$client->expects($this->once())->method('get')->with($this->equalTo($url))->will($this->returnValue($requestMock));
+		$response = new Guzzle\Http\Message\Response(200, null, 'access_token=token&expires=100');
+		$requestMock->expects($this->once())->method('send')->will($this->returnValue($response));
 		$provider->setHttpClient($client);
 		$provider->getAccessToken($request);
 	}
@@ -67,7 +68,7 @@ class OAuthTwoProviderTest extends PHPUnit_Framework_TestCase {
 
 	protected function getMockProvider($methods = array(), $constructor = array())
 	{
-		$methods = array_merge($methods, array('getAuthEndpoint', 'getAccessEndpoint', 'getUserDataEndpoint', 'getGrantTypeOptions'));
+		$methods = array_merge($methods, array('getAuthEndpoint', 'getAccessEndpoint', 'getUserDataEndpoint'));
 		if (count($constructor) == 0)
 		{
 			$stateStore = $this->getMock('Illuminate\Socialite\OAuthTwo\StateStoreInterface');

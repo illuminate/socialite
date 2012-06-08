@@ -44,19 +44,6 @@ class FacebookProvider extends OAuthTwoProvider {
 	}
 
 	/**
-	 * Get an array of query string options for a grant type.
-	 *
-	 * @param  Symfony\Component\HttpFoundation\Request
-	 * @param  string  $grantType
-	 * @param  array  $options
-	 * @return array
-	 */
-	protected function getGrantTypeOptions(Request $request, $grantType, $options)
-	{
-		return array();
-	}
-
-	/**
 	 * Execute the request to get the access token.
 	 *
 	 * @param  Guzzle\Http\ClientInterface  $client
