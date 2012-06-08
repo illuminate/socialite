@@ -60,6 +60,21 @@ class OAuthTwoProviderTest extends PHPUnit_Framework_TestCase {
 	}
 
 
+	public function testAccessTokenIsRetrieved()
+	{
+		$provider = $this->getMockProvider();
+		$client = $this->getMock('Guzzle\Http\ClientInterface');
+		$request = $this->getMock('Guzzle\Http\Message\RequestInterface');
+		$response = new Guzzle\Http\Message\Response('200', null, 'access_token=foo&expires=bar');
+		$request->expects($this->once())->method('send')->will($this->returnValue($response));
+		$client->expects($this->once())->method('get')->with($this->equalTo('http://foo.com'))->will($this->returnValue($request));
+		$provider->setHttpClient($client);
+		$token = $provider->getAccessToken('http://foo.com');
+		$this->assertEquals('foo', $token->getValue());
+		$this->assertEquals('bar', $token->get('expires'));
+	}
+
+
 	protected function getMockProvider($methods = array(), $constructor = array())
 	{
 		$methods = array_merge($methods, array('getAuthEndpoint', 'getAccessEndpoint', 'getUserDataEndpoint'));

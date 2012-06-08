@@ -197,9 +197,7 @@ abstract class OAuthTwoProvider {
 		// client ID, client secret and any other options that are needed.
 		$options = $this->getAccessOptions($request, $options);
 
-		$query = '?'.http_build_query($options);
-
-		return $this->getAccessEndpoint().$query;
+		return $this->getAccessEndpoint().'?'.http_build_query($options);
 	}
 
 	/**
@@ -290,13 +288,12 @@ abstract class OAuthTwoProvider {
 	/**
 	 * Execute the request to get the user's access token.
 	 *
-	 * @param  Guzzle\Http\ClientInterface  $client
-	 * @param  array  $options
+	 * @param  string  $accessUrl
 	 * @return AccessToken
 	 */
 	public function getAccessToken($accessUrl)
 	{
-		$response = $this->getHttpClient()->get($url)->send();
+		$response = $this->getHttpClient()->get($accessUrl)->send();
 
 		$parameters = $this->parseAccessResponse($response);
 
