@@ -48,6 +48,23 @@ class OAuthTwoProviderTest extends PHPUnit_Framework_TestCase {
 	}
 
 
+	public function testAccessRequestCalledWithProperOptions()
+	{
+		$provider = $this->getMockProvider(array('getCurrentUrl'));
+		$provider->getStateStore()->expects($this->once())->method('getState')->will($this->returnValue('bar'));
+		$provider->expects($this->once())->method('getAccessEndpoint')->will($this->returnValue('http://access.com'));
+		$provider->expects($this->once())->method('getCurrentUrl')->will($this->returnValue('http://current.com'));
+		$request = Request::create('/', 'GET', array('state' => 'bar', 'code' => 'blah'));
+		$url = 'http://access.com?client_id=client&client_secret=secret&redirect_uri=http://current.com&code=blah&grant_type=authorization_code';
+		$client = m::mock('Guzzle\Http\ClientInterface');
+		$client->shouldReceive('get')->once()->with($url)->andReturn($client);
+		$repsonse = new Guzzle\Http\Message\Response(200, null, 'access_token=token&expires=100');
+		$client->shouldReceive('send')->once()->andReturn($response);
+		$provider->setHttpClient($client);
+		$provider->getAccessToken($request);
+	}
+
+
 	protected function getMockProvider($methods = array(), $constructor = array())
 	{
 		$methods = array_merge($methods, array('getAuthEndpoint', 'getAccessEndpoint', 'getUserDataEndpoint', 'getGrantTypeOptions'));
