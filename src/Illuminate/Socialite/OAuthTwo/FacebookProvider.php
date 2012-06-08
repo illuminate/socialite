@@ -44,20 +44,6 @@ class FacebookProvider extends OAuthTwoProvider {
 	}
 
 	/**
-	 * Execute the request to get the access token.
-	 *
-	 * @param  Guzzle\Http\ClientInterface  $client
-	 * @param  array  $options
-	 * @return Guzzle\Http\Message\Response
-	 */
-	protected function executeAccessRequest(ClientInterface $client, $options)
-	{
-		$url = $this->getAccessEndpoint().'?'.http_build_query($options);
-
-		return $client->get($url)->send();
-	}
-
-	/**
 	 * Get the default scopes for the provider.
 	 *
 	 * @return array

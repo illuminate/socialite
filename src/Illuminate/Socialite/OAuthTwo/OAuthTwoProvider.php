@@ -356,9 +356,9 @@ abstract class OAuthTwoProvider {
 	 * @param  Symfony\Component\HttpFoundation\Request
 	 * @return string
 	 */
-	protected function getCurrentUrl(Request $request)
+	protected function getCurrentUrl(Request $r)
 	{
-		return $request->getScheme().'://'.$request->getHttpHost().$request->getPathInfo();
+		return $r->getScheme().'://'.$r->getHttpHost().$r->getPathInfo();
 	}
 
 	/**
