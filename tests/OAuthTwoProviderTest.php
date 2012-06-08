@@ -44,27 +44,19 @@ class OAuthTwoProviderTest extends PHPUnit_Framework_TestCase {
 		$provider = $this->getMockProvider();
 		$provider->getStateStore()->expects($this->once())->method('getState')->will($this->returnValue('foo'));
 		$request = Request::create('/', 'GET', array('state' => 'bar'));
-		$provider->getAccessToken($request);
+		$provider->getAccessTokenUrl($request);
 	}
 
 
-	public function testAccessRequestCalledWithProperOptions()
+	public function testAccessTokenUrlCreatedWithParameters()
 	{
 		$provider = $this->getMockProvider(array('getCurrentUrl'));
-		$provider->getStateStore()->expects($this->once())->method('getState')->will($this->returnValue('bar'));
 		$provider->expects($this->once())->method('getAccessEndpoint')->will($this->returnValue('http://access.com'));
-		$provider->expects($this->once())->method('getCurrentUrl')->will($this->returnValue('http://current.com'));
-		$request = Request::create('/', 'GET', array('state' => 'bar', 'code' => 'blah'));
-		$url = 'http://access.com?client_id=client&client_secret=secret&redirect_uri='.urlencode('http://current.com').'&code=blah&grant_type=authorization_code';
-		$client = $this->getMock('Guzzle\Http\ClientInterface');
-		$requestMock = $this->getMock('Guzzle\Http\Message\RequestInterface');
-		$client->expects($this->once())->method('get')->with($this->equalTo($url))->will($this->returnValue($requestMock));
-		$response = new Guzzle\Http\Message\Response(200, null, 'access_token=token&expires=100');
-		$requestMock->expects($this->once())->method('send')->will($this->returnValue($response));
-		$provider->setHttpClient($client);
-		$token = $provider->getAccessToken($request);
-		$this->assertEquals('token', $token->getValue());
-		$this->assertEquals('100', $token->get('expires'));
+		$provider->getStateStore()->expects($this->once())->method('getState')->will($this->returnValue('foo'));
+		$request = Request::create('/', 'GET', array('state' => 'foo', 'code' => 'bar'));
+		$provider->expects($this->once())->method('getCurrentUrl')->with($this->equalTo($request))->will($this->returnValue('http://current.com'));
+		$url = $provider->getAccessTokenUrl($request);
+		$this->assertEquals('http://access.com?client_id=client&client_secret=secret&redirect_uri='.urlencode('http://current.com').'&code=bar&grant_type=authorization_code', $url);
 	}
 
 
