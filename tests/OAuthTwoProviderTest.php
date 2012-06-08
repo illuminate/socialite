@@ -1,6 +1,7 @@
 <?php
 
 use Mockery as m;
+use Symfony\Component\HttpFoundation\Request;
 use Illuminate\Socialite\OAuthTwo\OAuthTwoProvider;
 
 class OAuthTwoProviderTest extends PHPUnit_Framework_TestCase {
@@ -32,6 +33,18 @@ class OAuthTwoProviderTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('client', $parameters['client_id']);
 		$this->assertEquals('http://callback.com', $parameters['redirect_uri']);
 		$this->assertTrue(is_string($parameters['state']));
+	}
+
+
+	/**
+	 * @expectedException Illuminate\Socialite\OAuthTwo\StateMismatchException
+	 */
+	public function testStateMismatchThrowsException()
+	{
+		$provider = $this->getMockProvider();
+		$provider->getStateStore()->expects($this->once())->method('getState')->will($this->returnValue('foo'));
+		$request = Request::create('/', 'GET', array('state' => 'bar'));
+		$provider->getAccessToken($request);
 	}
 
 
