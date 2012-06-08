@@ -62,7 +62,9 @@ class OAuthTwoProviderTest extends PHPUnit_Framework_TestCase {
 		$response = new Guzzle\Http\Message\Response(200, null, 'access_token=token&expires=100');
 		$requestMock->expects($this->once())->method('send')->will($this->returnValue($response));
 		$provider->setHttpClient($client);
-		$provider->getAccessToken($request);
+		$token = $provider->getAccessToken($request);
+		$this->assertEquals('token', $token->getValue());
+		$this->assertEquals('100', $token->get('expires'));
 	}
 
 
