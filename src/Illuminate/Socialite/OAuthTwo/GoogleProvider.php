@@ -67,17 +67,6 @@ class GoogleProvider extends OAuthTwoProvider {
 	}
 
 	/**
-	 * Create an access token with the given parameters.
-	 *
-	 * @param  array  $parameters
-	 * @return AccessToken
-	 */
-	protected function createAccessToken(array $parameters)
-	{
-		return new AccessToken($parameters);
-	}
-
-	/**
 	 * Get the default scopes for the provider.
 	 *
 	 * @return array

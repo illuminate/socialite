@@ -168,13 +168,13 @@ abstract class OAuthTwoProvider {
 	}
 
 	/**
-	 * Get the user's access token URL.
+	 * Get the user's access token.
 	 *
 	 * @param  Symfony\Component\HttpFoundation\Request  $request
 	 * @param  array  $options
-	 * @return string
+	 * @return Illuminate\Socialite\OAuthTwo\AccessToken
 	 */
-	public function getAccessTokenUrl(Request $request, array $options = array())
+	public function getAccessToken(Request $request, array $options = array())
 	{
 		// First we want to verify that the state given in the request and the state
 		// we have in storage match. If they do not, there could be a malicious
@@ -184,6 +184,8 @@ abstract class OAuthTwoProvider {
 			throw new StateMismatchException;
 		}
 
+		$client = $this->getHttpClient();
+
 		// If the "grant_type" option is not set, we will default it to the value
 		// needed to get the access token, which is the most likely candidate
 		// for the value and makes for a good default value for us to set.
@@ -192,12 +194,16 @@ abstract class OAuthTwoProvider {
 			$options['grant_type'] = 'authorization_code';
 		}
 
-		// Next we'll need to gather up the all of the other query string options
-		// that need to be attached to the URL. It typically will include the
-		// client ID, client secret and any other options that are needed.
 		$options = $this->getAccessOptions($request, $options);
 
-		return $this->getAccessEndpoint().'?'.http_build_query($options);
+		// Once we have all of our options we can execute a request to the server
+		// to obtain the access token, which can be stored and used to access
+		// the provider's users APIs for basic information about the user.
+		$response = $this->executeAccessRequest($client, $options);
+
+		$parameters = $this->parseAccessResponse($response);
+
+		return $this->createAccessToken($parameters);
 	}
 
 	/**
@@ -252,9 +258,6 @@ abstract class OAuthTwoProvider {
 
 		$grantOptions = $this->getGrantOptions($request, $grant, $options);
 
-		// Once we our default options + our grant type options, we can merge the two
-		// together to get all of the default options we need to create the query
-		// string for the URL. The provider will have a chance to supply more.
 		return array_merge($query, $grantOptions);
 	}
 
@@ -286,18 +289,17 @@ abstract class OAuthTwoProvider {
 	}
 
 	/**
-	 * Execute the request to get the user's access token.
+	 * Execute the request to get the access token.
 	 *
-	 * @param  string  $accessUrl
-	 * @return AccessToken
+	 * @param  Guzzle\Http\ClientInterface  $client
+	 * @param  array  $options
+	 * @return Guzzle\Http\Message\Response
 	 */
-	public function getAccessToken($accessUrl)
+	protected function executeAccessRequest(ClientInterface $client, $options)
 	{
-		$response = $this->getHttpClient()->get($accessUrl)->send();
+		$url = $this->getAccessEndpoint().'?'.http_build_query($options);
 
-		$parameters = $this->parseAccessResponse($response);
-
-		return $this->createAccessToken($parameters);
+		return $client->get($url)->send();
 	}
 
 	/**

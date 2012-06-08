@@ -44,34 +44,27 @@ class OAuthTwoProviderTest extends PHPUnit_Framework_TestCase {
 		$provider = $this->getMockProvider();
 		$provider->getStateStore()->expects($this->once())->method('getState')->will($this->returnValue('foo'));
 		$request = Request::create('/', 'GET', array('state' => 'bar'));
-		$provider->getAccessTokenUrl($request);
+		$provider->getAccessToken($request);
 	}
 
 
-	public function testAccessTokenUrlCreatedWithParameters()
+	public function testAccessRequestCalledWithProperOptions()
 	{
 		$provider = $this->getMockProvider(array('getCurrentUrl'));
+		$provider->getStateStore()->expects($this->once())->method('getState')->will($this->returnValue('bar'));
 		$provider->expects($this->once())->method('getAccessEndpoint')->will($this->returnValue('http://access.com'));
-		$provider->getStateStore()->expects($this->once())->method('getState')->will($this->returnValue('foo'));
-		$request = Request::create('/', 'GET', array('state' => 'foo', 'code' => 'bar'));
-		$provider->expects($this->once())->method('getCurrentUrl')->with($this->equalTo($request))->will($this->returnValue('http://current.com'));
-		$url = $provider->getAccessTokenUrl($request);
-		$this->assertEquals('http://access.com?client_id=client&client_secret=secret&redirect_uri='.urlencode('http://current.com').'&code=bar&grant_type=authorization_code', $url);
-	}
-
-
-	public function testAccessTokenIsRetrieved()
-	{
-		$provider = $this->getMockProvider();
+		$provider->expects($this->once())->method('getCurrentUrl')->will($this->returnValue('http://current.com'));
+		$request = Request::create('/', 'GET', array('state' => 'bar', 'code' => 'blah'));
+		$url = 'http://access.com?client_id=client&client_secret=secret&redirect_uri='.urlencode('http://current.com').'&code=blah&grant_type=authorization_code';
 		$client = $this->getMock('Guzzle\Http\ClientInterface');
-		$request = $this->getMock('Guzzle\Http\Message\RequestInterface');
-		$response = new Guzzle\Http\Message\Response('200', null, 'access_token=foo&expires=bar');
-		$request->expects($this->once())->method('send')->will($this->returnValue($response));
-		$client->expects($this->once())->method('get')->with($this->equalTo('http://foo.com'))->will($this->returnValue($request));
+		$requestMock = $this->getMock('Guzzle\Http\Message\RequestInterface');
+		$client->expects($this->once())->method('get')->with($this->equalTo($url))->will($this->returnValue($requestMock));
+		$response = new Guzzle\Http\Message\Response(200, null, 'access_token=token&expires=100');
+		$requestMock->expects($this->once())->method('send')->will($this->returnValue($response));
 		$provider->setHttpClient($client);
-		$token = $provider->getAccessToken('http://foo.com');
-		$this->assertEquals('foo', $token->getValue());
-		$this->assertEquals('bar', $token->get('expires'));
+		$token = $provider->getAccessToken($request);
+		$this->assertEquals('token', $token->getValue());
+		$this->assertEquals('100', $token->get('expires'));
 	}
 
 
