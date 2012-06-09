@@ -96,7 +96,9 @@ abstract class OAuthTwoProvider {
 	{
 		$query = http_build_query(array('access_token' => $token->getValue()));
 
-		$response = $this->getHttpClient()->get($this->getUserDataEndpoint().'?'.$query)->send();
+		$client = $this->getHttpClient();
+
+		$response = $client->get($this->getUserDataEndpoint().'?'.$query)->send();
 
 		return new UserData($this->parseJsonResponse($response));
 	}
