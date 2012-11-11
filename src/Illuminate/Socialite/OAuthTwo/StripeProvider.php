@@ -34,6 +34,18 @@ class StripeProvider extends OAuthTwoProvider {
 	}
 
 	/**
+	 * Execute the request to get the access token.
+	 *
+	 * @param  Guzzle\Http\ClientInterface  $client
+	 * @param  array  $options
+	 * @return Guzzle\Http\Message\Response
+	 */
+	protected function executeAccessRequest(ClientInterface $client, $options)
+	{
+		return $client->post($this->getAccessEndpoint(), null, $options)->send();
+	}
+
+	/**
 	 * Get the user data end-point URL for the provider.
 	 *
 	 * @return string
