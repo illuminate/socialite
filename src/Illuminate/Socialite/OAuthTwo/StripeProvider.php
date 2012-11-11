@@ -48,6 +48,17 @@ class StripeProvider extends OAuthTwoProvider {
 	}
 
 	/**
+	 * Get an array of parameters from the access token response.
+	 *
+	 * @param  Guzzle\Http\Message\Response  $response
+	 * @return array
+	 */
+	protected function parseAccessResponse(Response $response)
+	{
+		return $this->parseJsonResponse($response);
+	}
+
+	/**
 	 * Get the user data end-point URL for the provider.
 	 *
 	 * @return string
