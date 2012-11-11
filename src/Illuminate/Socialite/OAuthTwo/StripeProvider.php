@@ -42,7 +42,9 @@ class StripeProvider extends OAuthTwoProvider {
 	 */
 	protected function executeAccessRequest(ClientInterface $client, $options)
 	{
-		return $client->post($this->getAccessEndpoint(), null, $options)->send();
+		$headers = array('Authorization' => 'Bearer '.$this->secret);
+
+		return $client->post($this->getAccessEndpoint(), $headers, $options)->send();
 	}
 
 	/**
