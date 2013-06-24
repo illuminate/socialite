@@ -360,7 +360,7 @@ abstract class OAuthTwoProvider {
 	 */
 	protected function getCurrentUrl(Request $r)
 	{
-		return $r->getScheme().'://'.$r->getHttpHost().$r->getPathInfo();
+		return $r->getSchemeAndHttpHost() . $r->getBaseUrl() . $r->getPathInfo();
 	}
 
 	/**
